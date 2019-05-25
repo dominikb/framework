@@ -79,6 +79,16 @@ class CacheFileStoreTest extends TestCase
         $this->assertTrue($result);
     }
 
+    public function testStoreWithZeroSecondsUsesCurrentTimestamp()
+    {
+        $files = $this->mockFilesystem();
+        $store = new FileStore($files, __DIR__);
+        $contents = Carbon::now()->getTimestamp().serialize('bar');
+        $files->expects($this->once())->method('put')->with($this->isType('string'), $this->equalTo($contents))->willReturn(strlen($contents));
+        $result = $store->put('foo', 'bar', 0);
+        $this->assertTrue($result);
+    }
+
     public function testForeversAreStoredWithHighTimestamp()
     {
         $files = $this->mockFilesystem();

@@ -51,7 +51,7 @@ class CacheArrayStoreTest extends TestCase
     {
         $mock = $this->getMockBuilder(ArrayStore::class)->setMethods(['put'])->getMock();
         $mock->expects($this->once())
-            ->method('put')->with($this->equalTo('foo'), $this->equalTo('bar'), $this->equalTo(0))
+            ->method('put')->with($this->equalTo('foo'), $this->equalTo('bar'), $this->equalTo(9999999999))
             ->willReturn(true);
         $result = $mock->forever('foo', 'bar');
         $this->assertTrue($result);
@@ -106,5 +106,12 @@ class CacheArrayStoreTest extends TestCase
     {
         $store = new ArrayStore;
         $this->assertEmpty($store->getPrefix());
+    }
+
+    public function testStoreWithZeroSecondsUsesCurrentTimestamp()
+    {
+        $store = new ArrayStore;
+        $store->put('foo', 'bar', 0);
+        $this->assertNull($store->get('foo'));
     }
 }

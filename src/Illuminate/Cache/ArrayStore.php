@@ -31,7 +31,7 @@ class ArrayStore extends TaggableStore
 
         $expiresAt = $item['expiresAt'] ?? 0;
 
-        if ($expiresAt !== 0 && $this->currentTime() > $expiresAt) {
+        if ($this->currentTime() > $expiresAt) {
             $this->forget($key);
 
             return;
@@ -99,7 +99,7 @@ class ArrayStore extends TaggableStore
      */
     public function forever($key, $value)
     {
-        return $this->put($key, $value, 0);
+        return $this->put($key, $value, 9999999999);
     }
 
     /**

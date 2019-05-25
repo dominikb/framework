@@ -102,8 +102,12 @@ class MemcachedStore extends TaggableStore implements LockProvider
      */
     public function put($key, $value, $seconds)
     {
+        if (0 > $expiration = $this->calculateExpiration($seconds)) {
+            return $this->forget($key);
+        }
+
         return $this->memcached->set(
-            $this->prefix.$key, $value, $this->calculateExpiration($seconds)
+            $this->prefix.$key, $value, $expiration
         );
     }
 
@@ -175,7 +179,7 @@ class MemcachedStore extends TaggableStore implements LockProvider
      */
     public function forever($key, $value)
     {
-        return $this->put($key, $value, 0);
+        return $this->memcached->set($this->prefix.$key, $value, 0);
     }
 
     /**
@@ -243,7 +247,7 @@ class MemcachedStore extends TaggableStore implements LockProvider
      */
     protected function toTimestamp($seconds)
     {
-        return $seconds > 0 ? $this->availableAt($seconds) : 0;
+        return $seconds > 0 ? $this->availableAt($seconds) : -1;
     }
 
     /**

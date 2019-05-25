@@ -149,4 +149,20 @@ class CacheMemcachedStoreTest extends TestCase
         $store->setPrefix(null);
         $this->assertEmpty($store->getPrefix());
     }
+
+    public function testDurationLessThanSecondDeletesItem()
+    {
+        if (! class_exists(Memcached::class)) {
+            $this->markTestSkipped('Memcached module not installed');
+        }
+
+        $memcache = $this->getMockBuilder(Memcached::class)->setMethods(['delete'])->getMock();
+        $memcache->expects($this->exactly(2))->method('delete')->with($this->equalTo('foo'))->willReturn(true);
+        $store = new MemcachedStore($memcache);
+
+        $result = $store->put('foo', 'bar', 0);
+        $this->assertTrue($result);
+        $result = $store->put('foo', 'bar', -1);
+        $this->assertTrue($result);
+    }
 }

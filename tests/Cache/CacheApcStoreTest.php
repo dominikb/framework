@@ -114,4 +114,15 @@ class CacheApcStoreTest extends TestCase
         $result = $store->flush();
         $this->assertTrue($result);
     }
+
+    public function testDurationLessThanSecondRemovesKeyFromCache()
+    {
+        $apc = $this->getMockBuilder(ApcWrapper::class)->setMethods(['delete'])->getMock();
+        $apc->expects($this->exactly(2))->method('delete')->with($this->equalTo('foo'))->willReturn(true);
+        $store = new ApcStore($apc);
+        $result = $store->put('foo', 'bar', 0);
+        $this->assertTrue($result);
+        $result = $store->put('foo', 'bar', -1);
+        $this->assertTrue($result);
+    }
 }

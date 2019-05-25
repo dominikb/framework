@@ -58,6 +58,10 @@ class ApcStore extends TaggableStore
      */
     public function put($key, $value, $seconds)
     {
+        if ($seconds <= 0) {
+            return $this->forget($key);
+        }
+
         return $this->apc->put($this->prefix.$key, $value, $seconds);
     }
 
@@ -94,7 +98,7 @@ class ApcStore extends TaggableStore
      */
     public function forever($key, $value)
     {
-        return $this->put($key, $value, 0);
+        return $this->apc->put($key, $value, 0);
     }
 
     /**

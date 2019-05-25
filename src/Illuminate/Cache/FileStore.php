@@ -118,7 +118,7 @@ class FileStore implements Store
      */
     public function forever($key, $value)
     {
-        return $this->put($key, $value, 0);
+        return $this->put($key, $value, 9999999999);
     }
 
     /**
@@ -235,7 +235,7 @@ class FileStore implements Store
     {
         $time = $this->availableAt($seconds);
 
-        return $seconds === 0 || $time > 9999999999 ? 9999999999 : $time;
+        return $time > 9999999999 ? 9999999999 : $time;
     }
 
     /**
